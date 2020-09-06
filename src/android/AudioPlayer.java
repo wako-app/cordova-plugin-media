@@ -59,7 +59,8 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                         MEDIA_RUNNING,
                         MEDIA_PAUSED,
                         MEDIA_STOPPED,
-                        MEDIA_LOADING
+                        MEDIA_LOADING,
+                        MEDIA_LOOP
                       };
 
     private static final String LOG_TAG = "AudioPlayer";
@@ -408,7 +409,12 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     public void onCompletion(MediaPlayer player) {
         LOG.d(LOG_TAG, "on completion is calling stopped");
-        this.setState(STATE.MEDIA_STOPPED);
+        this.setState(STATE.MEDIA_LOOP);
+        if(this.audioFile != null) {
+          this.readyPlayer(this.audioFile);
+          this.resumePlaying();
+        }
+
     }
 
     /**
@@ -626,6 +632,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_RUNNING:
                 case MEDIA_PAUSED:
                     return true;
+                case MEDIA_LOOP:
                 case MEDIA_STOPPED:
                     //if we are readying the same file
                     if (file!=null && this.audioFile.compareTo(file) == 0) {
